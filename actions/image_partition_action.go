@@ -459,7 +459,7 @@ func (i ImagePartitionAction) Run(context *debos.DebosContext) error {
 		}
 	}
 
-	for idx, _ := range i.Partitions {
+	for idx := range i.Partitions {
 		p := &i.Partitions[idx]
 
 		if p.PartLabel == "" {
@@ -536,10 +536,10 @@ func (i ImagePartitionAction) Run(context *debos.DebosContext) error {
 		mntB := i.Mountpoints[b].Mountpoint
 
 		// root should always be mounted first
-		if (mntA == "/") {
+		if mntA == "/" {
 			return true
 		}
-		if (mntB == "/") {
+		if mntB == "/" {
 			return false
 		}
 
@@ -660,7 +660,7 @@ func (i *ImagePartitionAction) Verify(context *debos.DebosContext) error {
 	}
 
 	num := 1
-	for idx, _ := range i.Partitions {
+	for idx := range i.Partitions {
 		p := &i.Partitions[idx]
 		p.number = num
 		num++
@@ -736,7 +736,7 @@ func (i *ImagePartitionAction) Verify(context *debos.DebosContext) error {
 		}
 	}
 
-	for idx, _ := range i.Mountpoints {
+	for idx := range i.Mountpoints {
 		m := &i.Mountpoints[idx]
 
 		// check for duplicate mountpoints
@@ -746,7 +746,7 @@ func (i *ImagePartitionAction) Verify(context *debos.DebosContext) error {
 			}
 		}
 
-		for pidx, _ := range i.Partitions {
+		for pidx := range i.Partitions {
 			p := &i.Partitions[pidx]
 			if m.Partition == p.Name {
 				m.part = p
