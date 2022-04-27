@@ -34,40 +34,6 @@ jobs:
           file: docker/Dockerfile
           cache-to: type=local,dest=/tmp/.build-cache,mode=max
 
-  unit-tests:
-    name: Run unit tests
-    needs:
-      - build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Repository checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Use cache
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.build-cache
-          key: ${{ runner.os }}-docker-${{ github.sha }}
-
-      - name: Build Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: false
-          tags: debos-builder
-          file: docker/Dockerfile
-          cache-from: type=local,src=/tmp/.build-cache
-          load: true
-          target: builder
-
-      - name: Run unit tests
-        run: |
-          docker-compose -f docker/unit-tests.test.yml \
-            up --exit-code-from=sut
-
   recipe-tests:
     name: Run recipe tests
     needs:
@@ -137,7 +103,6 @@ jobs:
   publish-github:
     name: Publish to GHCR
     needs:
-      - unit-tests
       - recipe-tests
       - uml-tests
     if: github.event_name != 'pull_request'
@@ -191,7 +156,6 @@ jobs:
   publish-dockerhub:
     name: Publish to DockerHub
     needs:
-      - unit-tests
       - recipe-tests
       - uml-tests
     if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
