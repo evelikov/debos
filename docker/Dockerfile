@@ -88,6 +88,18 @@ RUN apt-get update && \
         zip && \
     rm -rf /var/lib/apt/lists/*
 
+# Enable backports for the Arch dependencies
+RUN echo "deb http://ftp.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list
+
+# Install Arch dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        arch-install-scripts \
+        archlinux-keyring \
+        makepkg \
+        pacman-package-manager && \
+    rm -rf /var/lib/apt/lists/*
+
 # debian's qemu-user-static package no longer registers binfmts
 # if running inside a virtualmachine; dockerhub builds are inside a vm
 RUN for arch in aarch64 alpha arm armeb cris hexagon hppa m68k microblaze mips mips64 mips64el mipsel mipsn32 mipsn32el ppc ppc64 ppc64le riscv32 riscv64 s390x sh4 sh4eb sparc sparc32plus sparc64 xtensa xtensaeb; do \
