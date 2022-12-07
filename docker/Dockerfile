@@ -125,7 +125,7 @@ RUN for arch in aarch64 alpha arm armeb cris hexagon hppa m68k microblaze mips m
 
 COPY --from=builder $GOPATH/bin/debos /usr/local/bin/debos
 
-COPY --from=builder /pacman/* /
+COPY --from=builder /pacman/ /
 
 RUN ls -lah /usr/bin/pacman
 RUN ls -lah /usr/share/makepkg/
