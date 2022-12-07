@@ -127,4 +127,7 @@ COPY --from=builder $GOPATH/bin/debos /usr/local/bin/debos
 
 COPY --from=builder /pacman/* /
 
+RUN ls -lah /usr/bin/pacman*
+RUN ls -lah /usr/share/makepkg/
+
 ENTRYPOINT ["/usr/local/bin/debos"]

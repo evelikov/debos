@@ -3,6 +3,17 @@
 architecture: {{$architecture}}
 
 actions:
+  - action: run
+    command: |
+      ls -lah /usr/bin/pacman*
+      ls -lah /usr/share/makepkg/
+
+  - action: run
+    chroot: true
+    command: |
+      ls -lah /usr/bin/pacman*
+      ls -lah /usr/share/makepkg/
+
   - action: pacstrap
     config: pacman.conf
     mirror: mirrorlist
