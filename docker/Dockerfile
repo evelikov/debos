@@ -91,13 +91,17 @@ RUN apt-get update && \
 # Enable backports for the Arch dependencies
 RUN echo "deb http://ftp.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list
 
+# NOTE: Explicitly install arch-install-scripts from backports. The normal one
+# lacks pactrap.
 # Install Arch dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        arch-install-scripts \
         archlinux-keyring \
         makepkg \
         pacman-package-manager && \
+    apt-get install -y --no-install-recommends \
+        -t bullseye-backports \
+        arch-install-scripts && \
     rm -rf /var/lib/apt/lists/*
 
 RUN ls -lah /usr/bin/pacstrap
