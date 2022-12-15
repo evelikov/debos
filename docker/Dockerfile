@@ -26,6 +26,22 @@ COPY . $GOPATH/src/github.com/go-debos/debos
 WORKDIR $GOPATH/src/github.com/go-debos/debos/cmd/debos
 RUN go install ./...
 
+# Pull the latest archlinux-keyring, since the one in Debian is outdated
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1026080
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        pkgconf \
+        python3-all \
+        sq \
+        systemd && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://gitlab.archlinux.org/archlinux/archlinux-keyring && \
+    cd archlinux-keyring && \
+    git checkout -B latest-release 20221213 && \
+    make build && \
+    make PREFIX=/usr KEYRING_TARGET_DIR=/usr/share/keyrings/ DESTDIR=/arch-keyring install
+
 ### second stage - runner ###
 FROM debian:bullseye-slim as runner
 
@@ -87,22 +103,6 @@ RUN apt-get update && \
         xz-utils \
         zip && \
     rm -rf /var/lib/apt/lists/*
-
-# Pull the latest archlinux-keyring, since the one in Debian is outdated
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1026080
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        pkgconf \
-        python3-all \
-        sq \
-        systemd && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN git clone https://gitlab.archlinux.org/archlinux/archlinux-keyring && \
-    cd archlinux-keyring && \
-    git checkout -B latest-release 20221213 && \
-    make build && \
-    make PREFIX=/usr KEYRING_TARGET_DIR=/usr/share/keyrings/ DESTDIR=/arch-keyring install
 
 # Enable backports for the Arch dependencies
 RUN echo "deb http://ftp.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list
